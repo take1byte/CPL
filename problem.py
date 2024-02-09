@@ -3,6 +3,7 @@ import numpy as np
 
 # device
 device = 'cpu'
+ns_epsilon = 0.0001 # additive constant for preventing division by 0
 
 def get_problem(name, *args, **kwargs):
     name = name.lower()
@@ -21,6 +22,36 @@ def get_problem(name, *args, **kwargs):
         raise Exception("Problem not found.")
     
     return PROBLEM[name](*args, **kwargs)
+
+class rastrigin():
+    """Implementation of Rastrigin function and zero-order approximation of the gradient for its Gaussian Homotopy
+    Rastrigin function: https://en.wikipedia.org/wiki/Rastrigin_function
+    Zero-order approximation of the gradient: Eq (11) in https://arxiv.org/pdf/2307.12551.pdf
+    """
+    def __init__(self, n_dim = 2):
+        self.n_dim = n_dim
+
+    def f_func(self, x_input):
+        # x_input in a tensor of shape (n_samples, n_dim)
+        A = 10
+        n = self.n_dim
+        x = x_input
+
+        xs_squared = x.mul(x).sum(dim=(1,))
+        xs_cos = A * torch.cos(2 * torch.pi * x).sum(dim=(1,))
+        f = A * n + (xs_squared - xs_cos)
+
+        return f
+
+    def evaluate(self, x_input, t):
+        n = self.n_dim
+        t = 1 - t + ns_epsilon
+
+        u = torch.randn([t.shape[0], n]).to(device)
+        f = self.f_func(x_input)
+        grad_hat = 1 / t * (self.f_func(x_input + t.expand(t.shape[0], n) * u) - f).repeat(n,1).T * u
+
+        return f, grad_hat
 
 class ackley():
     def __init__(self, n_dim = 2):
