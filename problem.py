@@ -12,6 +12,7 @@ def get_problem(name, *args, **kwargs):
         'ackley': ackley,
         'rosenbrock': rosenbrock,
         'himmelblau': himmelblau,
+        'rastrigin': rastrigin,
         'regression_f1': regression_f1,
         'regression_f2': regression_f2,
         'regression_f3': regression_f3,

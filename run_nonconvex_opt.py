@@ -14,9 +14,19 @@ device = 'cpu'
 # number of independent runs
 n_run = 20 
 
-# instance name, from ['ackley', 'himmelblau', 'rosenbrock', ]
-test_ins = 'ackley'
+# instance name, from ['ackley', 'himmelblau', 'rosenbrock', 'rastrigin', ]
+test_ins = 'rastrigin'
 
+if test_ins == 'rastrigin':
+
+    # number of learning steps'
+    n_steps = 8000
+    # number of sampled homotopy levels at each step
+    n_levels = 4
+    # number of local search
+    n_local_search = 3500
+    # initial solution
+    init_point = torch.tensor([1,1]).to(device)
 
 if test_ins == 'ackley':
 
